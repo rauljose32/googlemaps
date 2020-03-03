@@ -3,26 +3,99 @@ package com.example.googlemaps01;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnCameraIdleListener {
 
     private GoogleMap mMap;
+    private static final float ZOOM_DELTA = 2f;
+    private static final float DEFAULT_MIN_ZOOM = 2.0f;
+    private static final float DEFAULT_MAX_ZOOM = 22.0f;
+    private static final LatLngBounds ADELAID = new LatLngBounds(
+            new LatLng(-35.0, 138.58), new LatLng(-34.9, 138.61));
+    private static final CameraPosition ADELAID_CAMERA = new CameraPosition.Builder().target(
+            new LatLng(-34.92873, 138.59995)).zoom(20.0f).bearing(0).tilt(0).build();
+    private float mMinZoom, mMaxZoom;
+    private TextView mCameraTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        mMap = null;
+        resetMinMaxZoom();
+        mCameraTextView = findViewById(R.id.camera_text);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }//method
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    public void onClampToAdelaid() {
+        if (!checkReady()) {
+            return;
+        }
+        mMap.setLatLngBoundsForCameraTarget(ADELAID);
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(ADELAID_CAMERA));
+    }
+
+    public void onLatLangClampReset(View v) {
+        if (!checkReady()) {
+            return;
+        }
+        mMap.setLatLngBoundsForCameraTarget(null);
+        toast("Limites de Lat Lang resetados");
+    }
+
+    public void onSetMinZoomClamp(View v) {
+        if (!checkReady()) {
+            return;
+        }
+        mMinZoom = mMinZoom + ZOOM_DELTA;
+        mMap.setMinZoomPreference(mMinZoom);
+        toast("Min Zoom Configurado: " + mMinZoom);
+    }
+
+    public void onSetMaxZoomClamp(View v) {
+        if (!checkReady()) {
+            return;
+        }
+        mMinZoom = mMaxZoom - ZOOM_DELTA;
+        mMap.setMaxZoomPreference(mMaxZoom);
+        toast("Max Zoom Configurado: " + mMaxZoom);
+    }
+
+    public void onMinMaxZoomClampReset(View v) {
+        if (!checkReady()) {
+            return;
+        }
+        resetMinMaxZoom();
+        mMap.resetMinMaxZoomPreference();
+        toast("Zoom Min Max resetados");
+    }
+
+
+    private void resetMinMaxZoom() {
+        mMaxZoom = DEFAULT_MAX_ZOOM;
+        mMinZoom = DEFAULT_MIN_ZOOM;
     }
 
 
@@ -37,12 +110,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+       /* mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
         //mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
+        mMap.setOnCameraIdleListener(this);
     }
-}
+
+    @Override
+    public void onCameraIdle() {
+        mCameraTextView.setText(mMap.getCameraPosition().toString());
+    }//method
+
+    private boolean checkReady() {
+        if (mMap == null) {
+            Toast.makeText(getApplicationContext(), "Mapa ainda não disponivel", Toast.LENGTH_SHORT).show();
+
+            return false;
+        }
+        return true;
+    }//method
+
+    private void toast(String msg) {
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+    }//method
+
+
+}//class
