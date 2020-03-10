@@ -28,14 +28,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="onSetMaxZoomClamp"
-                android:text="Fixar Min Zoom" />
+                android:text="Fixar Max Zoom" />
 
             <Button
                 android:id="@+id/clamp_zoom_reset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="onMinMaxZoomClampReset"
-                android:text="Resetar Min Max Zoom" />
+                android:text="Resetar Zoom" />
 
 
         </LinearLayout>
@@ -66,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                android:onClick="onLatLanClampReset"
+                android:onClick="onLatLngClampReset"
                 android:text="Resetar lat e lang" />
 
         </LinearLayout>
@@ -92,6 +92,15 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        map:cameraMaxZoomPreference="14.0"
+        map:cameraMinZoomPreference="10.0"
+        map:cameraTargetLat="37.421976"
+        map:cameraTargetLng="-122.084064"
+        map:cameraZoom="12"
+        map:latLngBoundsNorthEastLatitude="37.45"
+        map:latLngBoundsNorthEastLongitude="-122.05"
+        map:latLngBoundsSouthWestLatitude="37.4"
+        map:latLngBoundsSouthWestLongitude="-122.1"
         tools:context=".MapsActivity" />
 
 

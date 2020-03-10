@@ -22,10 +22,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final float ZOOM_DELTA = 2f;
     private static final float DEFAULT_MIN_ZOOM = 2.0f;
     private static final float DEFAULT_MAX_ZOOM = 22.0f;
+
     private static final LatLngBounds ADELAID = new LatLngBounds(
             new LatLng(-35.0, 138.58), new LatLng(-34.9, 138.61));
+
+    private static final LatLngBounds IFTO = new LatLngBounds(
+            new LatLng(-10.268828, -48.410502), new LatLng(-10.147188, -48.275920));
+
     private static final CameraPosition ADELAID_CAMERA = new CameraPosition.Builder().target(
             new LatLng(-34.92873, 138.59995)).zoom(20.0f).bearing(0).tilt(0).build();
+
+    private static final CameraPosition IFTO_CAMERA = new CameraPosition.Builder().target(
+            new LatLng(-10.199202218157746, -48.31158433109522)).zoom(20.0f).bearing(0).tilt(0).build();
+
+
     private float mMinZoom, mMaxZoom;
     private TextView mCameraTextView;
 
@@ -49,7 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onResume();
     }
 
-    public void onClampToAdelaid() {
+    public void onClampToAdelaid(View v) {
         if (!checkReady()) {
             return;
         }
@@ -57,7 +67,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(ADELAID_CAMERA));
     }
 
-    public void onLatLangClampReset(View v) {
+    public void onClampToPacific(View v) {
+        if (!checkReady()) {
+            return;
+        }
+        mMap.setLatLngBoundsForCameraTarget(IFTO);
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(IFTO_CAMERA));
+    }
+
+    public void onLatLngClampReset(View v) {
         if (!checkReady()) {
             return;
         }
@@ -78,7 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (!checkReady()) {
             return;
         }
-        mMinZoom = mMaxZoom - ZOOM_DELTA;
+        mMaxZoom = mMaxZoom - ZOOM_DELTA;
         mMap.setMaxZoomPreference(mMaxZoom);
         toast("Max Zoom Configurado: " + mMaxZoom);
     }
@@ -117,7 +135,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
+       LatLng ifto = new LatLng(-10.199202218157746, -48.31158433109522);
+        mMap = googleMap;
         mMap.setOnCameraIdleListener(this);
+        mMap.addMarker(new MarkerOptions().position(ifto).title("IFTO Campus Palmas"));
     }
 
     @Override
